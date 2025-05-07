@@ -13,8 +13,8 @@
 1. Run ```python3 train/load_train.py``` - creates the model and saves as "my_visualchexbert_model.pth"
 
 ## Citation
-[Link](https://arxiv.org/pdf/2102.11467) to the research paper
-[Link](https://github.com/stanfordmlgroup/VisualCheXbert) to the the GitHub repository of the research paper
+1. [Link](https://arxiv.org/pdf/2102.11467) to the research paper
+2. [Link](https://github.com/stanfordmlgroup/VisualCheXbert) to the the GitHub repository of the research paper
 
 ```
 @article{jain2021visualchexbert,
