@@ -60,5 +60,5 @@ build_final_dataset(
     labels_csv="labels.csv",
     report_folder="mimic_cxr_reports",
     paths_csv="paths.csv",
-    output_csv="clean_dataset.csv"
+    output_csv="../constructed-data/clean_dataset.csv"
 )
