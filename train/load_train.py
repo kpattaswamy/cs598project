@@ -29,9 +29,8 @@ if __name__ == "__main__":
     import torch
 
     # === Step 1: Load and Split Dataset ===
-    print("📦 Loading dataset...")
-    dataset_path = "../../clean_dataset.csv"  # Adjust if needed
-    tokenized_path = "encoded_impressions.json"
+    dataset_path = "../constructed-data/clean_dataset.csv"  # Adjust if needed
+    tokenized_path = "../constructed-data/encoded_impressions.json"
 
     full_dataset = ImpressionsDataset(dataset_path, tokenized_path)
 
@@ -46,10 +45,6 @@ if __name__ == "__main__":
 
     train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS, collate_fn=collate_fn_labels)
     val_loader = DataLoader(val_ds, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS, collate_fn=collate_fn_labels)
-
-
-    # === Step 2: Initialize Model ===
-    print("🧠 Initializing model...")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = bert_labeler()
@@ -57,9 +52,6 @@ if __name__ == "__main__":
 
     optimizer = optim.Adam(model.parameters(), lr=2e-5)
     criterion = nn.BCEWithLogitsLoss()
-
-    # === Step 3: Train Model ===
-    print("🚀 Starting training...")
     num_epochs = 8
 
     for epoch in range(num_epochs):
@@ -68,13 +60,12 @@ if __name__ == "__main__":
 
         for batch in train_loader:
             input_ids = batch["imp"].to(device)
-            labels = batch["label"].to(device).permute(1, 0)  # shape: (14, batch_size)
+            labels = batch["label"].to(device).permute(1, 0)  
             lengths = batch["len"]
             attn_mask = generate_attention_masks(input_ids, lengths, device)
 
             outputs = model(input_ids, attn_mask)
 
-            # Compute average loss across 14 conditions
             loss = sum(criterion(outputs[i], labels[i]) for i in range(14)) / 14
 
             optimizer.zero_grad()
@@ -84,14 +75,9 @@ if __name__ == "__main__":
             total_loss += loss.item()
 
         avg_loss = total_loss / len(train_loader)
-        print(f"✅ Epoch {epoch+1}/{num_epochs} | Avg Loss: {avg_loss:.4f}")
 
-        # === Step 4: Evaluate ===
         model.eval()
         metrics = evaluate(model, val_loader, device)
-        print(f"📊 AUCs: {metrics['auc']}\n")
 
-    # === Step 5: Save Model ===
     torch.save({'model_state_dict': model.state_dict()}, 'my_visualchexbert_model.pth')
-    print("💾 Model saved as my_visualchexbert_model.pth")
 
